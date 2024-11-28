@@ -1,3 +1,4 @@
+// src/index.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -8,6 +9,8 @@ import Write from "./routes/Write.jsx";
 import LoginPage from "./routes/LoginPage.jsx";
 import RegisterPage from "./routes/RegisterPage.jsx";
 import SinglePostPage from "./routes/SinglePostPage.jsx";
+import EditPost from "./routes/EditPost.jsx";
+import NotFound from "./routes/NotFound.jsx"; 
 import MainLayout from "./layouts/MainLayout.jsx";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -35,10 +38,6 @@ const router = createBrowserRouter([
         element: <PostListPage />,
       },
       {
-        path: "/:slug",
-        element: <SinglePostPage />,
-      },
-      {
         path: "/write",
         element: <Write />,
       },
@@ -49,6 +48,22 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage />,
+      },
+      {
+        path: "/about",
+        element: <div>About</div>,
+      },
+      {
+        path: "/edit/:slug",
+        element: <EditPost />,
+      },
+      {
+        path: "/:slug",
+        element: <SinglePostPage />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

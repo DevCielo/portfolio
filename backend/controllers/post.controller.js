@@ -176,6 +176,72 @@ export const featurePost = async (req, res) => {
   res.status(200).json(updatedPost);
 };
 
+export const updatePost = async (req, res) => {
+    try {
+      const clerkUserId = req.auth.userId;
+  
+      if (!clerkUserId) {
+        return res.status(401).json({ message: "Not authenticated!" });
+      }
+  
+      const role = req.auth.sessionClaims?.metadata?.role || "user";
+  
+      // Find the post by slug
+      const post = await Post.findOne({ slug: req.params.slug });
+  
+      if (!post) {
+        return res.status(404).json({ message: "Post not found!" });
+      }
+  
+      // Find the user making the request
+      const user = await User.findOne({ clerkUserId });
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found!" });
+      }
+  
+      // Check if the user is authorized to update the post
+      if (role !== "admin" && post.user.toString() !== user._id.toString()) {
+        return res.status(403).json({ message: "You are not authorized to update this post!" });
+      }
+  
+      const { title, category, desc, content, img } = req.body;
+      const updatedFields = {};
+  
+      if (title && title !== post.title) {
+        // Update the slug if the title has changed
+        let newSlug = title.replace(/ /g, "-").toLowerCase();
+        let existingPost = await Post.findOne({ slug: newSlug });
+        let counter = 2;
+  
+        while (existingPost && existingPost._id.toString() !== post._id.toString()) {
+          newSlug = `${newSlug}-${counter}`;
+          existingPost = await Post.findOne({ slug: newSlug });
+          counter++;
+        }
+  
+        updatedFields.slug = newSlug;
+        updatedFields.title = title;
+      }
+  
+      if (category) updatedFields.category = category;
+      if (desc) updatedFields.desc = desc;
+      if (content) updatedFields.content = content;
+      if (img) updatedFields.img = img;
+  
+      const updatedPost = await Post.findOneAndUpdate(
+        { slug: req.params.slug },
+        { $set: updatedFields },
+        { new: true }
+      ).populate("user", "username img");
+  
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error("Error updating post:", error);
+      res.status(500).json({ message: "Internal server error!" });
+    }
+  };
+
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IK_URL_ENDPOINT,
   publicKey: process.env.IK_PUBLIC_KEY,

@@ -1,7 +1,8 @@
+// PostMenuActions.jsx
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const PostMenuActions = ({ post }) => {
@@ -180,7 +181,7 @@ const PostMenuActions = ({ post }) => {
           )}
         </div>
       )}
-      {user && (post.user.username === user.username || isAdmin) && (
+      {(user && (post.user.username === user.username || isAdmin)) && (
         <div
           className="flex items-center gap-2 py-2 text-sm cursor-pointer"
           onClick={handleDelete}
@@ -199,6 +200,25 @@ const PostMenuActions = ({ post }) => {
             <span className="text-xs">(in progress)</span>
           )}
         </div>
+      )}
+      {(user && (post.user.username === user.username || isAdmin)) && (
+        <Link
+          to={`/edit/${post.slug}`}
+          className="flex items-center gap-2 py-2 text-sm cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="20px"
+            height="20px"
+          >
+            <path
+              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.004 1.004 0 0 0 0-1.42l-2.34-2.34a1.004 1.004 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+              fill="black"
+            />
+          </svg>
+          <span>Edit this Post</span>
+        </Link>
       )}
     </div>
   );
