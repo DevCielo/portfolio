@@ -1,12 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IKImage } from 'imagekitio-react';
 import Image from './Image';
 import { Link } from 'react-router-dom';
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignInButton, SignedIn, SignedOut, UserButton, useAuth } from '@clerk/clerk-react';
 
 
 function Navbar() {
     const [open, setOpen] = useState(false);
+
+    const { getToken }= useAuth();
+
+    useEffect(() => {
+        getToken().then(token => {
+            console.log("Retrieved token:", token);
+        }).catch(err => {
+            console.error("Error retrieving token:", err);
+        });
+    }, []);
+    
 
   return (
     <div className='w-full h-16 md:h-20 flex items-center justify-between'>
